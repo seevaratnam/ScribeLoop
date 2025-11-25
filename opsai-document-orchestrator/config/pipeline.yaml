@@ -1,0 +1,74 @@
+# OpsAI Document Orchestrator - Pipeline Configuration
+
+azure:
+  endpoint: "https://<your-resource>.cognitiveservices.azure.com"
+  api_version: "2025-05-01-preview"
+  router_analyzer_id: "doc-router"
+
+categories:
+  - id: "health_claim"
+    display_name: "Health Claim"
+    analyzer_id: "health-claim-extractor"
+    classification_prompt: |
+      Health insurance claim forms submitted by members for medical expense reimbursement.
+      Contains patient info, provider details, procedure codes, and claimed amounts.
+    extraction_schema:
+      docType:
+        type: string
+        description: "Document type identifier"
+      member:
+        type: object
+        properties:
+          memberId:
+            type: string
+            description: "Member or policy ID"
+          fullName:
+            type: string
+            description: "Member full name"
+      claimLines:
+        type: array
+        items:
+          type: object
+          properties:
+            serviceDate:
+              type: string
+            procedureCode:
+              type: string
+            amount:
+              type: number
+      totalClaimed:
+        type: number
+        description: "Total claimed amount"
+
+  - id: "provider_invoice"
+    display_name: "Provider Invoice"
+    analyzer_id: "provider-invoice-extractor"
+    classification_prompt: |
+      Invoices from healthcare providers for services rendered.
+      Contains billing details, invoice numbers, and itemized charges.
+    extraction_schema:
+      invoiceNumber:
+        type: string
+        description: "Invoice identifier"
+      invoiceDate:
+        type: string
+        description: "Invoice date"
+      provider:
+        type: object
+        properties:
+          name:
+            type: string
+          taxId:
+            type: string
+      lineItems:
+        type: array
+        items:
+          type: object
+          properties:
+            description:
+              type: string
+            amount:
+              type: number
+      totalDue:
+        type: number
+        description: "Total amount due"
